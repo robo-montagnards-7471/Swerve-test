@@ -3,6 +3,7 @@ package frc.robot.components;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
@@ -14,9 +15,10 @@ public class Motor {
     private SparkMax motor;
     private RelativeEncoder encoder;
 
+    PIDController pid = new PIDController(1.45, 1.23, 0.13);
+
     private double objective_position = 0;
 
-    private double speed = 0;
 
     public Motor()
     {
@@ -26,24 +28,15 @@ public class Motor {
 
     public void updateData() {
         double current_position = encoder.getPosition();
-        speed = Math.abs((objective_position-current_position)/20);
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
         SmartDashboard.putNumber("Objective Position", objective_position);
-        SmartDashboard.putNumber("Speed", speed);
+        SmartDashboard.putNumber("Speed", pid.calculate(current_position, objective_position));
     }
 
     public void poll() {
         double current_position = encoder.getPosition();
-        if( current_position < objective_position ) {
-            setMotor(speed);
-        }
-        else if( current_position > objective_position ) {
-            setMotor(speed*-1);
-        }
-        else {
-            setMotor(0);
-        }
+        setMotor( pid.calculate(current_position, objective_position) );
     }
 
     public void setMotor( double speed ) {
