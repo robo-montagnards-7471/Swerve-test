@@ -28,6 +28,7 @@ public class Robot extends TimesliceRobot {
   Motor motor;
   Controller controller;
 
+
   /** Robot constructor. */
   public Robot() {
     
@@ -107,16 +108,10 @@ public class Robot extends TimesliceRobot {
   public void teleopPeriodic() {
     motor.poll();
     if( controller.getAButton() ) {
-      motor.goToPosition( 25 );
+      motor.toggleTarget();
     }
     else if( controller.getBButton() ) {
-      motor.goToPosition( -25 );
-    }
-    else if( controller.getXButton() ) {
-      motor.goToPosition( 1 );
-    }
-    else if( controller.getYButton() ) {
-      motor.goToPosition( 0 );
+      motor.incrementDivider();
     }
   }
 

@@ -72,4 +72,8 @@ public class Motor {
     public void incrementDivider() {
         divider++;
     }
+
+    public void toggleTarget() {
+        objective_position = Math.abs( 25-objective_position );
+    }
 }
