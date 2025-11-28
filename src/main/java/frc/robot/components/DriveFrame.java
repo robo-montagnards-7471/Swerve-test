@@ -47,6 +47,15 @@ public class DriveFrame {
             back_left_motor_position,
             back_right_motor_position
         );
+        
+        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 0);
+        SwerveModuleState[] module_states = kinematic_drive.toSwerveModuleStates(speeds);
+
+        front_left_module_state = module_states[0];
+        front_right_module_state = module_states[1];
+        back_left_module_state = module_states[2];
+        back_right_module_state = module_states[3];
+
 
         SmartDashboard.putData("Speeds", builder -> {
             builder.addDoubleProperty("Speed X", () -> getXSpeed(), null);
@@ -79,7 +88,6 @@ public class DriveFrame {
         front_right_module_state = module_states[1];
         back_left_module_state = module_states[2];
         back_right_module_state = module_states[3];
-        // TODO: display modules states on dashboard
     }
 
     private double getXSpeed() {

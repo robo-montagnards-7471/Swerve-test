@@ -26,6 +26,7 @@ public class Robot extends TimesliceRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   Controller controller;
+  DriveFrame driveFrame;
 
   /** Robot constructor. */
   public Robot() {
@@ -47,6 +48,7 @@ public class Robot extends TimesliceRobot {
     // = 9 ms -> 90% allocated
     
     controller = new Controller();
+    driveFrame = new DriveFrame();
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -100,7 +102,12 @@ public class Robot extends TimesliceRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    StickPosition left_stick = controller.getLeftStickPosition();
+    StickPosition right_stick = controller.getRightStickPosition();
+
+    driveFrame.drive(left_stick, right_stick);
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
