@@ -17,23 +17,18 @@ public class Motor {
     private double objective_position = 0;
 
     private double speed = 0;
-    private double divider = 20;
+    private double divider = 10;
 
     private double min_speed = 0.1;
     private double max_speed = 1;
     // Put correct values here
     // min_speed should be the minimum speed that the motor can run at to actually move the mechanism
 
-    private double optimal_divider = 20;
-    private double optimal_precision = 1;
-
-    private double last_position = 0;
 
     public Motor()
     {
         motor = new SparkMax(8, SparkLowLevel.MotorType.kBrushless);
         encoder = motor.getEncoder();
-        last_position = encoder.getPosition();
     }
 
     public void updateData() {
@@ -45,8 +40,6 @@ public class Motor {
         SmartDashboard.putNumber("Objective Position", objective_position);
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumber("Divider", divider);
-        SmartDashboard.putNumber("Optimal Divider", optimal_divider);
-        SmartDashboard.putNumber("Optimal Precision", optimal_precision);
         SmartDashboard.putNumber("Distance To Go", Math.abs(current_position - objective_position));
     }
 
@@ -61,14 +54,6 @@ public class Motor {
         else {
             motor.set(0);
         }
-        if( current_position == last_position ) {
-            double current_precision = Math.abs(objective_position - current_position);
-            if( current_precision < optimal_precision ) {
-                divider = optimal_divider;
-                optimal_precision = current_precision;
-            }
-        }
-        last_position = current_position;
     }
 
     public void goToPosition( double position ) {
