@@ -15,10 +15,9 @@ public class Motor {
     private SparkMax motor;
     private RelativeEncoder encoder;
 
-    PIDController pid = new PIDController(1.45, 1.23, 0.13);
-
-    private double objective_position = 0;
-
+    private double objective_speed = 0;
+    private double current_power = 0;
+    private double speed_modifier = 0.01; // set to reasonable value
 
     public Motor()
     {
@@ -30,20 +29,17 @@ public class Motor {
         double current_position = encoder.getPosition();
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
-        SmartDashboard.putNumber("Objective Position", objective_position);
-        SmartDashboard.putNumber("Speed", pid.calculate(current_position, objective_position));
+        SmartDashboard.putNumber("Current Power", current_power);
     }
 
     public void poll() {
-        double current_position = encoder.getPosition();
-        setMotor( pid.calculate(current_position, objective_position) );
+        double current_speed = encoder.getVelocity();
+        double speed_error = objective_speed - current_speed;
+        current_power += speed_error * speed_modifier;
+        motor.set(current_power);
     }
 
-    public void setMotor( double speed ) {
+    public void setSpeed( double speed ) {
         motor.set(speed);
-    }
-
-    public void goToPosition( double position ) {
-        objective_position = position;
     }
 }
