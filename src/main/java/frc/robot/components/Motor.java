@@ -7,12 +7,13 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
 
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 
 
 public class Motor {
     private SparkMax motor;
-    private RelativeEncoder encoder;
+    private SparkAbsoluteEncoder encoder;
 
     private double objective_position = 0;
 
@@ -28,7 +29,7 @@ public class Motor {
     public Motor()
     {
         motor = new SparkMax(8, SparkLowLevel.MotorType.kBrushless);
-        encoder = motor.getEncoder();
+        encoder = motor.getAbsoluteEncoder();
     }
 
     public void updateData() {
