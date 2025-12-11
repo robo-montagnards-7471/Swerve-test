@@ -46,6 +46,12 @@ public class Controller {
         return new StickPosition(hardwareController.getRightX(), hardwareController.getRightY());
     }
 
+    public double getRightAngle() {
+        double x = hardwareController.getRightX();
+        double y = hardwareController.getRightY();
+        return Math.toDegrees(Math.atan2(y, x))/360;
+    }
+
     public boolean getAButton() {
         return hardwareController.getAButton();
     }

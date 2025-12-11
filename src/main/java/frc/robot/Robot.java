@@ -109,11 +109,7 @@ public class Robot extends TimesliceRobot {
   public void teleopPeriodic() {
     motor.poll();
     controller.poll();
-    double modifier = controller.getRightStickPosition().x();
-    if( controller.getAButton() ) {
-      modifier = 0;
-    }
-    motor.modifyPosition(modifier*25);
+    motor.goToPosition(controller.getRightAngle());
   }
 
   /** This function is called once when the robot is disabled. */
