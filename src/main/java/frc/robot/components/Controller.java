@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.XboxController;
 public class Controller {
     private final XboxController hardwareController;
 
-    private int armPositionRequest = 0;
 
     public Controller() {
         this.hardwareController = new XboxController(0);
