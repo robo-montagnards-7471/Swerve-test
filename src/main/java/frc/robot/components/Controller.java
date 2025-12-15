@@ -48,7 +48,7 @@ public class Controller {
     public double getRightAngle() {
         double x = hardwareController.getRightX();
         double y = hardwareController.getRightY();
-    SmartDashboard.putNumber("Right Joystick Angle", Math.toDegrees(Math.atan2(y, x)));
+        SmartDashboard.putNumber("Right Joystick Angle", Math.toDegrees(Math.atan2(y, x))/360+0.5);
         return Math.toDegrees(Math.atan2(y, x))/360+0.5;
     }
 
