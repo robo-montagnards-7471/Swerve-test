@@ -1,11 +1,13 @@
 package frc.robot.components;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
+import java.nio.file.Path;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel;
@@ -28,14 +30,25 @@ public class Motor {
 
     public Motor()
     {
-        motor = new SparkMax(8, SparkLowLevel.MotorType.kBrushless);
+        motor = new SparkMax(7, SparkLowLevel.MotorType.kBrushless);
         encoder = motor.getAbsoluteEncoder();
     }
 
     public void updateData() {
         double current_position = encoder.getPosition();
-        speed = Math.abs((objective_position-current_position)*12/divider);
-        // speed = Math.min( Math.max(speed, max_speed), min_speed );
+        double path1 = Math.abs(objective_position-current_position);
+        double path2 = Math.abs(objective_position-(current_position-1));
+        double shortest_path = 0;
+        if( path1 < path2 )
+            shortest_path = path1;
+        else
+            shortest_path = path2;
+        speed = shortest_path*12/divider;
+
+        SmartDashboard.putNumber("Path 1", path1);
+        SmartDashboard.putNumber("Path 2", path2);
+        SmartDashboard.putNumber("Shortest Path", shortest_path);
+
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
         SmartDashboard.putNumber("Objective Position", objective_position);
@@ -47,10 +60,10 @@ public class Motor {
     public void poll() {
         double current_position = encoder.getPosition();
         if( current_position < objective_position ) {
-            motor.set(speed);
+            motor.set(speed*-1);
         }
         else if( current_position > objective_position ) {
-            motor.set(speed*-1);
+            motor.set(speed);
         }
         else {
             motor.set(0);
@@ -59,9 +72,6 @@ public class Motor {
 
     public void goToPosition( double position ) {
         objective_position = position;
-    }
-
-    public void modifyPosition( double position ) {
-        objective_position += position;
+        SmartDashboard.putNumber("Position Request", position);
     }
 }

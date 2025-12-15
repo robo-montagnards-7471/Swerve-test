@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.ResourceBundle.Control;
 
+import javax.lang.model.util.ElementScanner14;
+
 import edu.wpi.first.wpilibj.TimesliceRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,6 +27,8 @@ public class Robot extends TimesliceRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  double request_pos = 0;
 
   Motor motor;
   Controller controller;
@@ -109,7 +113,7 @@ public class Robot extends TimesliceRobot {
   public void teleopPeriodic() {
     motor.poll();
     controller.poll();
-    motor.goToPosition(controller.getRightAngle());
+    motor.goToPosition( controller.getRightAngle() );
   }
 
   /** This function is called once when the robot is disabled. */
