@@ -36,18 +36,26 @@ public class Motor {
 
     public void updateData() {
         double current_position = encoder.getPosition();
-        double path1 = Math.abs(objective_position-current_position);
-        double path2 = Math.abs(objective_position-(current_position-1));
+        double path1 = Math.abs((objective_position-1)-current_position);
+        double path2 = Math.abs(objective_position-current_position);
+        double path3 = Math.abs((objective_position+1)-current_position);
         double shortest_path = 0;
-        if( path1 < path2 )
-            shortest_path = path1;
-        else
-            shortest_path = path2;
+
+        shortest_path = Math.min( Math.min(path1, path2), path3 );
+        
         speed = shortest_path*12/divider;
 
         SmartDashboard.putNumber("Path 1", path1);
         SmartDashboard.putNumber("Path 2", path2);
+        SmartDashboard.putNumber("Path 3", path3);
         SmartDashboard.putNumber("Shortest Path", shortest_path);
+
+        if( shortest_path == path1 )
+            SmartDashboard.putString("Choosen Path", "Path 1");
+            if( shortest_path == path2 )
+            SmartDashboard.putString("Choosen Path", "Path 2");
+            if( shortest_path == path3 )
+            SmartDashboard.putString("Choosen Path", "Path 3");
 
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
