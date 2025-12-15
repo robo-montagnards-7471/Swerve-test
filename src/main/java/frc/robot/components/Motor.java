@@ -34,7 +34,7 @@ public class Motor {
 
     public void updateData() {
         double current_position = encoder.getPosition();
-        speed = Math.abs((objective_position-current_position)/divider);
+        speed = Math.abs((objective_position-current_position)*12/divider);
         // speed = Math.min( Math.max(speed, max_speed), min_speed );
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
