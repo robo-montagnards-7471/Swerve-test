@@ -36,33 +36,20 @@ public class Motor {
 
     public void updateData() {
         double current_position = encoder.getPosition();
-        double path1 = Math.abs((objective_position-1)-current_position);
-        double path2 = Math.abs(objective_position-current_position);
-        double path3 = Math.abs((objective_position+1)-current_position);
-        double shortest_path = 0;
+        double distance_to_go = Math.abs(objective_position-current_position);
 
-        shortest_path = Math.min( Math.min(path1, path2), path3 );
+        if( distance_to_go > 0.50 )
+            // make the motor go the other way around
+            distance_to_go = 1.0 - distance_to_go;
         
-        speed = shortest_path*12/divider;
-
-        SmartDashboard.putNumber("Path 1", path1);
-        SmartDashboard.putNumber("Path 2", path2);
-        SmartDashboard.putNumber("Path 3", path3);
-        SmartDashboard.putNumber("Shortest Path", shortest_path);
-
-        if( shortest_path == path1 )
-            SmartDashboard.putString("Choosen Path", "Path 1");
-            if( shortest_path == path2 )
-            SmartDashboard.putString("Choosen Path", "Path 2");
-            if( shortest_path == path3 )
-            SmartDashboard.putString("Choosen Path", "Path 3");
+        speed = distance_to_go*12/divider;
 
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
         SmartDashboard.putNumber("Objective Position", objective_position);
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumber("Divider", divider);
-        SmartDashboard.putNumber("Distance To Go", Math.abs(current_position - objective_position));
+        SmartDashboard.putNumber("Distance To Go", distance_to_go);
     }
 
     public void poll() {
