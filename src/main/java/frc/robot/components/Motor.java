@@ -35,30 +35,31 @@ public class Motor {
     }
 
     public void updateData() {
-        double current_position = encoder.getPosition();
-        double distance_to_go = Math.abs(objective_position-current_position);
-
-        if( distance_to_go > 0.50 )
-            // make the motor go the other way around
-            distance_to_go = 1.0 - distance_to_go;
-        
-        speed = distance_to_go*12/divider;
 
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
         SmartDashboard.putNumber("Objective Position", objective_position);
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumber("Divider", divider);
-        SmartDashboard.putNumber("Distance To Go", distance_to_go);
+        SmartDashboard.putNumber("Distance To Go", Math.abs(objective_position-encoder.getPosition()));
     }
 
     public void poll() {
         double current_position = encoder.getPosition();
+        double distance_to_go = Math.abs(objective_position-current_position);
+        double modifier = 1;
+
+        if( distance_to_go > 0.50 )
+            distance_to_go = 1.0 - distance_to_go;
+            modifier = -1;
+        
+        speed = distance_to_go*12/divider;
+
         if( current_position < objective_position ) {
-            motor.set(speed*-1);
+            motor.set(speed*modifier*-1);
         }
         else if( current_position > objective_position ) {
-            motor.set(speed);
+            motor.set(speed*modifier);
         }
         else {
             motor.set(0);
