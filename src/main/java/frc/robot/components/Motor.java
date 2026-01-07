@@ -35,7 +35,6 @@ public class Motor {
     }
 
     public void updateData() {
-
         SmartDashboard.putNumber("Encoder Position", encoder.getPosition());
         SmartDashboard.putNumber("Encoder Velocity", encoder.getVelocity());
         SmartDashboard.putNumber("Objective Position", objective_position);
@@ -46,12 +45,12 @@ public class Motor {
 
     public void poll() {
         double current_position = encoder.getPosition();
-        double distance_to_go = Math.abs(objective_position-current_position);
+        double distance_to_go = objective_position-current_position;
         double modifier = 1;
 
-        if( distance_to_go > 0.50 )
-            distance_to_go = 1.0 - distance_to_go;
-            modifier = -1;
+        if( (current_position < 0.25 && objective_position > 0.75) || (current_position > 0.75 && objective_position < 0.25) )
+            distance_to_go = 1 - distance_to_go;
+            // distance_to_go *= -1;
         
         speed = distance_to_go*12/divider;
 
