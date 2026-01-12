@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.ResourceBundle.Control;
 
+import javax.lang.model.util.ElementScanner14;
+
 import edu.wpi.first.wpilibj.TimesliceRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.components.Motor;
 import frc.robot.data.StickPosition;
 import frc.robot.components.Controller;
+import java.lang.Math;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -25,8 +28,11 @@ public class Robot extends TimesliceRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  double request_pos = 0;
+
   Motor motor;
   Controller controller;
+
 
   /** Robot constructor. */
   public Robot() {
@@ -106,18 +112,8 @@ public class Robot extends TimesliceRobot {
   @Override
   public void teleopPeriodic() {
     motor.poll();
-    if( controller.getAButton() ) {
-      motor.goToPosition( 25 );
-    }
-    else if( controller.getBButton() ) {
-      motor.goToPosition( -25 );
-    }
-    else if( controller.getXButton() ) {
-      motor.goToPosition( 1 );
-    }
-    else if( controller.getYButton() ) {
-      motor.goToPosition( 0 );
-    }
+    controller.poll();
+    motor.goToPosition( controller.getRightAngle() );
   }
 
   /** This function is called once when the robot is disabled. */

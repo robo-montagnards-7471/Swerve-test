@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.XboxController;
 public class Controller {
     private final XboxController hardwareController;
 
-    private int armPositionRequest = 0;
 
     public Controller() {
         this.hardwareController = new XboxController(0);
@@ -19,7 +18,10 @@ public class Controller {
     /**
      * Update user desired states from non analog inputs based on state changes since last check
      */
-    public void poll() {}
+    public void poll() {
+        SmartDashboard.putNumber("joystick x", getRightStickPosition().x());
+        SmartDashboard.putNumber("joystick y", getRightStickPosition().y());
+    }
 
     /**
      * Used for single stick piloting
@@ -43,8 +45,15 @@ public class Controller {
         return new StickPosition(hardwareController.getRightX(), hardwareController.getRightY());
     }
 
+    public double getRightAngle() {
+        double x = hardwareController.getRightX();
+        double y = hardwareController.getRightY();
+        SmartDashboard.putNumber("Right Joystick Angle", Math.toDegrees(Math.atan2(y, x))/360+0.5);
+        return Math.toDegrees(Math.atan2(y, x))/360+0.5;
+    }
+
     public boolean getAButton() {
-        return hardwareController.getAButtonPressed();
+        return hardwareController.getAButton();
     }
 
     public boolean getBButton() {
