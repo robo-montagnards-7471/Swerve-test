@@ -1,13 +1,9 @@
 package frc.robot.components;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
-import java.nio.file.Path;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel;
@@ -62,15 +58,17 @@ public class Motor {
         
         speed = distance_to_go*12/divider;
 
-        if( current_position < objective_position ) {
-            motor.set(speed*modifier*-1);
-        }
-        else if( current_position > objective_position ) {
-            motor.set(speed*modifier);
-        }
-        else {
-            motor.set(0);
-        }
+        motor.set(speed);
+
+        // if( current_position < objective_position ) {
+        //     motor.set(speed*modifier*-1);
+        // }
+        // else if( current_position > objective_position ) {
+        //     motor.set(speed*modifier);
+        // }
+        // else {
+        //     motor.set(0);
+        // }
     }
 
     public void goToPosition( double position ) {
