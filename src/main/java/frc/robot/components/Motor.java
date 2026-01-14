@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 
 
+
 public class Motor {
     private SparkMax motor;
     private SparkAbsoluteEncoder encoder;
