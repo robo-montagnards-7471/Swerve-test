@@ -8,10 +8,22 @@ import java.lang.Math;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.PIDController;
+
 
 public class Motor {
-    private SparkMax motor;
+
+    private SparkMax steer_motor;
     private SparkAbsoluteEncoder encoder;
+    private PIDController turningPIDController;
 
     private double objective_position = 0;
 
@@ -26,8 +38,8 @@ public class Motor {
 
     public Motor()
     {
-        motor = new SparkMax(7, SparkLowLevel.MotorType.kBrushless);
-        encoder = motor.getAbsoluteEncoder();
+        steer_motor = new SparkMax(7, SparkLowLevel.MotorType.kBrushless);
+        encoder = steer_motor.getAbsoluteEncoder();
     }
 
     public void updateData() {
@@ -58,7 +70,7 @@ public class Motor {
         
         speed = distance_to_go*12/divider;
 
-        motor.set(speed);
+        steer_motor.set(speed);
 
         // if( current_position < objective_position ) {
         //     motor.set(speed*modifier*-1);
