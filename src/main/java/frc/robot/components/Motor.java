@@ -42,6 +42,7 @@ public class Motor {
     public void poll() {
         double current_position = encoder.getPosition();
         double distance_to_go = objective_position-current_position;
+        double modifier = 1;
 
         // // If the motor has to turn all the way around, turn other way
         // // 1. if start position is under 0.25 and objective is over 0.75
