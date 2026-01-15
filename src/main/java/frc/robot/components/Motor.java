@@ -42,33 +42,32 @@ public class Motor {
     public void poll() {
         double current_position = encoder.getPosition();
         double distance_to_go = objective_position-current_position;
-        double modifier = 1;
 
-        // If the motor has to turn all the way around, turn other way
-        // 1. if start position is under 0.25 and objective is over 0.75
-        // 2. if start position is over 0.75 and objective is under 0.25
-        if( (current_position < 0.25 && objective_position > 0.75) || (current_position > 0.75 && objective_position < 0.25) ) {
-            if( current_position < 0.25 ) {
-                distance_to_go = (objective_position-1) - current_position;
-            }
-            else {
-                distance_to_go = (objective_position+1) - current_position;
-            }
-        }
+        // // If the motor has to turn all the way around, turn other way
+        // // 1. if start position is under 0.25 and objective is over 0.75
+        // // 2. if start position is over 0.75 and objective is under 0.25
+        // if( (current_position < 0.25 && objective_position > 0.75) || (current_position > 0.75 && objective_position < 0.25) ) {
+        //     if( current_position < 0.25 ) {
+        //         distance_to_go = (objective_position-1) - current_position;
+        //     }
+        //     else {
+        //         distance_to_go = (objective_position+1) - current_position;
+        //     }
+        // }
         
         speed = distance_to_go*12/divider;
 
         motor.set(speed);
 
-        // if( current_position < objective_position ) {
-        //     motor.set(speed*modifier*-1);
-        // }
-        // else if( current_position > objective_position ) {
-        //     motor.set(speed*modifier);
-        // }
-        // else {
-        //     motor.set(0);
-        // }
+        if( current_position < objective_position ) {
+            motor.set(speed*modifier*-1);
+        }
+        else if( current_position > objective_position ) {
+            motor.set(speed*modifier);
+        }
+        else {
+            motor.set(0);
+        }
     }
 
     public void goToPosition( double position ) {
