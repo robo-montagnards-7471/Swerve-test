@@ -7,6 +7,7 @@ import java.lang.Math;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 
 
 public class Motor {
