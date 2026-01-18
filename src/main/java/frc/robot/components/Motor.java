@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkLowLevel;
 public class Motor {
     private SparkMax motor;
     private SparkAbsoluteEncoder encoder;
+    private ProfiledPIDController rotating_PidController;
 
     private double objective_position = 0;
 
