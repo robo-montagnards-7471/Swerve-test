@@ -69,9 +69,7 @@ public class Robot extends TimesliceRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {
-    motor.updateData();
-  }
+  public void robotPeriodic() {}
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
