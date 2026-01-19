@@ -32,6 +32,7 @@ public class Motor {
         motor = new SparkMax(7, SparkLowLevel.MotorType.kBrushless);
         encoder = motor.getAbsoluteEncoder();
         rotating_PidController = new ProfiledPIDController( 1.3, 1.14, 0.09, null );
+        rotating_PidController.enableContinuousInput(0, 1);
         /*
          * Plusieurs options pour le PID
          * Première option (Direcement à l'objectif)
