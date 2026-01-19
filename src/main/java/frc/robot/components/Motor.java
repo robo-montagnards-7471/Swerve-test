@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 
 
+
 public class Motor {
     private SparkMax motor;
     private SparkAbsoluteEncoder encoder;
@@ -30,6 +31,18 @@ public class Motor {
     {
         motor = new SparkMax(7, SparkLowLevel.MotorType.kBrushless);
         encoder = motor.getAbsoluteEncoder();
+        rotating_PidController = new ProfiledPIDController( 1.3, 1.14, 0.09, null );
+        /*
+         * Plusieurs options pour le PID
+         * Première option (Direcement à l'objectif)
+         *  kp = 1.09
+         *  ki = 1.11
+         *  kd = 0
+         * Deuxième option (Léger bump avant objectif)
+         *  kp = 1.3
+         *  ki = 1.14
+         *  kd = 0.09
+         */
     }
 
     public void updateData() {
@@ -44,7 +57,7 @@ public class Motor {
     public void poll() {
         double current_position = encoder.getPosition();
         double distance_to_go = objective_position-current_position;
-        double modifier = 1;
+        // double modifier = 1;
 
         // // If the motor has to turn all the way around, turn other way
         // // 1. if start position is under 0.25 and objective is over 0.75
@@ -58,40 +71,29 @@ public class Motor {
         //     }
         // }
         
-        speed = distance_to_go*12/divider;
+        // speed = distance_to_go*12/divider;
+        double speed1 = rotating_PidController.calculate(current_position, objective_position);
+        double speed2 = rotating_PidController.calculate(current_position, (objective_position+0.5)%1);
+        double speed = Math.min( speed1, speed2 );
+        // if( speed == speed2 ) {
+        //     speed *= -1;
+        // }
 
-        motor.set(speed);
+        // if( current_position < objective_position ) {
+        //     motor.set(speed*modifier*-1);
+        // }
+        // else if( current_position > objective_position ) {
+        //     motor.set(speed*modifier);
+        // }
+        // else {
+        //     motor.set(0);
+        // }
 
-        if( current_position < objective_position ) {
-            motor.set(speed*modifier*-1);
-        }
-        else if( current_position > objective_position ) {
-            motor.set(speed*modifier);
-        }
-        else {
-            motor.set(0);
-        }
+        motor.set( speed );
     }
 
     public void goToPosition( double position ) {
         objective_position = position;
         SmartDashboard.putNumber("Position Request", position);
-    }
-
-
-    /**
-     * Get the closest angle between the given angles.
-     */
-    private static double closestAngle(double a, double b)
-    {
-            // get direction
-            double dir = b%360.0 - a%360.0;
-
-            // convert from -360 to 360 to -180 to 180
-            if (Math.abs(dir) > 180.0)
-            {
-                    dir = -(Math.signum(dir) * 360.0) + dir;
-            }
-            return dir/360;
     }
 }
