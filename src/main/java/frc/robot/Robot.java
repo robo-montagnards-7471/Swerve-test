@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.TimesliceRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.components.Motor;
 import frc.robot.data.StickPosition;
 import frc.robot.components.Controller;
 import java.lang.Math;
@@ -30,7 +29,6 @@ public class Robot extends TimesliceRobot {
 
   double request_pos = 0;
 
-  Motor motor;
   Controller controller;
 
 
@@ -53,7 +51,6 @@ public class Robot extends TimesliceRobot {
     // Total usage: 5 ms (robot) + 2 ms (controller 1) + 2 ms (controller 2)
     // = 9 ms -> 90% allocated
     
-    motor = new Motor();
     controller = new Controller();
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -69,9 +66,7 @@ public class Robot extends TimesliceRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {
-    motor.updateData();
-  }
+  public void robotPeriodic() {}
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -111,9 +106,7 @@ public class Robot extends TimesliceRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    motor.poll();
     controller.poll();
-    motor.goToPosition( controller.getRightAngle() );
   }
 
   /** This function is called once when the robot is disabled. */
