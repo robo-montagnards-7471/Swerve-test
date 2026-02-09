@@ -4,124 +4,176 @@
 
 package frc.robot;
 
-import java.util.ResourceBundle.Control;
-
-import javax.lang.model.util.ElementScanner14;
-
-import edu.wpi.first.wpilibj.TimesliceRobot;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.data.StickPosition;
-import frc.robot.components.Controller;
-import java.lang.Math;
 
 /**
- * The methods in this class are called automatically corresponding to each mode, as described in
- * the TimesliceRobot documentation. If you change the name of this class or the package after
- * creating this project, you must also update the Main.java file in the project.
+ * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
+ * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
+ * project, you must also update the build.gradle file in the project.
  */
-public class Robot extends TimesliceRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+public class Robot extends TimedRobot
+{
 
-  double request_pos = 0;
+  private static Robot   instance;
+  private        Command m_autonomousCommand;
 
-  Controller controller;
+  private RobotContainer m_robotContainer;
 
+  private Timer disabledTimer;
 
-  /** Robot constructor. */
-  public Robot() {
-    
-    // Run robot periodic() functions for 5 ms, and run controllers every 10 ms
-    super(0.005, 0.01);
-    
-    // LiveWindow causes drastic overruns in robot periodic functions that will
-    // interfere with controllers
-    LiveWindow.disableAllTelemetry();
-    
-    // Runs for 2 ms after robot periodic functions
-    schedule(() -> {}, 0.002);
-    
-    // Runs for 2 ms after first controller function
-    schedule(() -> {}, 0.002);
-    
-    // Total usage: 5 ms (robot) + 2 ms (controller 1) + 2 ms (controller 2)
-    // = 9 ms -> 90% allocated
-    
-    controller = new Controller();
+  public Robot()
+  {
+    instance = this;
+  }
 
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+  public static Robot getInstance()
+  {
+    return instance;
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use this for items like
-   * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
+   * This function is run when the robot is first started up and should be used for any initialization code.
+   */
+  @Override
+  public void robotInit()
+  {
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
+
+    // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
+    // immediately when disabled, but then also let it be pushed more 
+    disabledTimer = new Timer();
+
+    if (isSimulation())
+    {
+      DriverStation.silenceJoystickConnectionWarning(true);
+    }
+  }
+
+  /**
+   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics that you want ran
+   * during disabled, autonomous, teleoperated and test.
    *
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
-
-  /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using the SendableChooser make sure to add them to the
-   * chooser code above as well.
-   */
-  @Override
-  public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+  public void robotPeriodic()
+  {
+    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
+    // commands, running already-scheduled commands, removing finished or interrupted commands,
+    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // block in order for anything in the Command-based framework to work.
+    CommandScheduler.getInstance().run();
   }
 
-  /** This function is called periodically during autonomous. */
+  /**
+   * This function is called once each time the robot enters Disabled mode.
+   */
   @Override
-  public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+  public void disabledInit()
+  {
+    m_robotContainer.setMotorBrake(true);
+    disabledTimer.reset();
+    disabledTimer.start();
+  }
+  
+  @Override
+  public void disabledPeriodic()
+  {
+    if (disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME))
+    {
+      m_robotContainer.setMotorBrake(false);
+      disabledTimer.stop();
+      disabledTimer.reset();
     }
   }
 
-  /** This function is called once when teleop is enabled. */
+  /**
+   * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
+   */
   @Override
-  public void teleopInit() {}
+  public void autonomousInit()
+  {
+    m_robotContainer.setMotorBrake(true);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {
-    controller.poll();
+    //Print the selected autonomous command upon autonomous init
+    System.out.println("Auto selected: " + m_autonomousCommand);
+
+    // schedule the autonomous command selected in the autoChooser
+    if (m_autonomousCommand != null)
+    {
+      m_autonomousCommand.schedule();
+    }
   }
 
-  /** This function is called once when the robot is disabled. */
+  /**
+   * This function is called periodically during autonomous.
+   */
   @Override
-  public void disabledInit() {}
+  public void autonomousPeriodic()
+  {
+  }
 
-  /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void teleopInit()
+  {
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (m_autonomousCommand != null)
+    {
+      m_autonomousCommand.cancel();
+    } else
+    {
+      CommandScheduler.getInstance().cancelAll();
+    }
+  }
 
-  /** This function is called once when test mode is enabled. */
+  /**
+   * This function is called periodically during operator control.
+   */
   @Override
-  public void testInit() {}
+  public void teleopPeriodic()
+  {
+  }
 
-  /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testInit()
+  {
+    // Cancels all running commands at the start of test mode.
+    CommandScheduler.getInstance().cancelAll();
+  }
+
+  /**
+   * This function is called periodically during test mode.
+   */
+  @Override
+  public void testPeriodic()
+  {
+  }
+
+  /**
+   * This function is called once when the robot is first started up.
+   */
+  @Override
+  public void simulationInit()
+  {
+  }
+
+  /**
+   * This function is called periodically whilst in simulation.
+   */
+  @Override
+  public void simulationPeriodic()
+  {
+  }
 }
